@@ -1,3 +1,4 @@
+<%@ page import="dev.yhp.study.last_bbs.enums.user.RegisterResult" %>
 <%@ page language="java" contentType="text/html" pageEncoding="UTF-8" trimDirectiveWhitespaces="true" %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -16,7 +17,7 @@
     <form id="registerForm" method="post">
         <label>
             <span hidden>이메일</span>
-            <input autofocus maxlength="50" name="email" placeholder="이메일" type="email">
+            <input autofocus maxlength="50" name="email" placeholder="이메일" type="email" value="${vo.email}">
         </label>
         <br>
         <label>
@@ -55,11 +56,11 @@
         </label>
         <label>
             <span hidden>연락처(중간)</span>
-            <input maxlength="4" name="contactSecond" placeholder="연락처(중간)" type="number">
+            <input maxlength="4" name="contactSecond" placeholder="연락처(중간)" type="number" value="${vo.contactSecond}">
         </label>
         <label>
             <span hidden>연락처(끝)</span>
-            <input maxlength="4" name="contactThird" placeholder="연락처(끝)" type="number">
+            <input maxlength="4" name="contactThird" placeholder="연락처(끝)" type="number" value="${vo.contactThird}">
         </label>
         <br>
         <label>
@@ -118,5 +119,11 @@
     </div>
 </main>
 <%@ include file="/WEB-INF/parts/footer.jsp" %>
+<script>
+    ${vo.result == RegisterResult.DUPLICATE_CONTACT ? "alert('입력하신 연락처는 이미 사용 중입니다.')" : ""}
+    ${vo.result == RegisterResult.DUPLICATE_EMAIL ? "alert('입력하신 이메일은 이미 사용 중입니다.')" : ""}
+    ${vo.result == RegisterResult.DUPLICATE_NICKNAME ? "alert('입력하신 닉네임은 이미 사용 중입니다.')" : ""}
+    ${vo.result == RegisterResult.FAILURE ? "alert('알 수 없는 이유로 회원가입에 실패하였습니다.')" : ""}
+</script>
 </body>
 </html>

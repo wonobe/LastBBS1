@@ -2,6 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="dev.yhp.study.last_bbs.mappers.IUserMapper">
+    <update id="updateAutoSignKeyExtended">
+        UPDATE `last_bbs`.`user_auto_sign_keys`
+        SET `expires_at` = DATE_ADD(NOW(), INTERVAL #{days} DAY)
+        WHERE `key` = #{key}
+          AND `expires_at` > NOW()
+          AND `expired_flag` = FALSE
+    </update>
+
     <select id="selectEmailCount" resultType="int">
         SELECT COUNT(`index`) AS `count`
         FROM `last_bbs`.`users`
@@ -28,5 +36,54 @@
                                        `address_post`, `address_primary`, `address_secondary`)
         VALUES (#{email}, #{hashedPassword}, #{nickname}, #{nameFirst}, #{nameOptional}, #{nameLast}, #{contactFirst},
                 #{contactSecond}, #{contactThird}, #{addressPost}, #{addressPrimary}, #{addressSecondary})
+    </insert>
+
+    <select id="selectUser" resultType="dev.yhp.study.last_bbs.dtos.UserDto"
+            parameterType="dev.yhp.study.last_bbs.vos.user.LoginVo">
+        SELECT `index`             AS `index`,
+               `email`             AS `email`,
+               `password`          AS `password`,
+               `nickname`          AS `nickname`,
+               `name_first`        AS `nameFirst`,
+               `name_optional`     AS `nameOptional`,
+               `name_last`         AS `nameLast`,
+               `contact_first`     AS `contactFirst`,
+               `contact_second`    AS `contactSecond`,
+               `contact_third`     AS `contactThird`,
+               `address_post`      AS `addressPost`,
+               `address_primary`   AS `addressPrimary`,
+               `address_secondary` AS `addressSecondary`,
+               `level`             AS `level`
+        FROM `last_bbs`.`users`
+        WHERE `email` = #{email}
+          AND `password` = #{hashedPassword}
+    </select>
+
+    <select id="selectUserFromCookie" resultType="dev.yhp.study.last_bbs.dtos.UserDto">
+        SELECT `user`.`index`             AS `index`,
+               `user`.`email`             AS `email`,
+               `user`.`password`          AS `password`,
+               `user`.`nickname`          AS `nickname`,
+               `user`.`name_first`        AS `nameFirst`,
+               `user`.`name_optional`     AS `nameOptional`,
+               `user`.`name_last`         AS `nameLast`,
+               `user`.`contact_first`     AS `contactFirst`,
+               `user`.`contact_second`    AS `contactSecond`,
+               `user`.`contact_third`     AS `contactThird`,
+               `user`.`address_post`      AS `addressPost`,
+               `user`.`address_primary`   AS `addressPrimary`,
+               `user`.`address_secondary` AS `addressSecondary`,
+               `user`.`level`             AS `level`
+        FROM `last_bbs`.`user_auto_sign_keys` AS `key`
+                 LEFT JOIN `last_bbs`.`users` AS `user` ON `key`.`user_email` = `user`.`email`
+        WHERE `key`.`key` = #{key}
+          AND `key`.`expires_at` > NOW()
+          AND `key`.`expired_flag` = FALSE
+        LIMIT 1
+    </select>
+
+    <insert id="insertAutoSignKey">
+        INSERT INTO `last_bbs`.`user_auto_sign_keys`(`user_email`, `key`, `expires_at`)
+        VALUES (#{email}, #{key}, DATE_ADD(NOW(), INTERVAL #{days} DAY))
     </insert>
 </mapper>
