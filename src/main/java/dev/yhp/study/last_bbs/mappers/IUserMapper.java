@@ -2,15 +2,16 @@ package dev.yhp.study.last_bbs.mappers;
 
 import dev.yhp.study.last_bbs.dtos.UserDto;
 import dev.yhp.study.last_bbs.vos.user.LoginVo;
+import dev.yhp.study.last_bbs.vos.user.ModifyVo;
 import dev.yhp.study.last_bbs.vos.user.RegisterVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface IUserMapper {
-    void updateAutoSignKeyExtended(
-            @Param("key") String key,
-            @Param("days") int days);
+    void updateAutoSignKeyExtend(
+            @Param("days") int days,
+            @Param("key") String key);
 
     int selectEmailCount(@Param("email") String email);
 
@@ -33,4 +34,8 @@ public interface IUserMapper {
             @Param("key") String key,
             @Param("days") int days);
 
+    void updateAutoSignKeyExpire(
+            @Param("key") String key);
+
+    void updateUser(ModifyVo modifyVo);
 }

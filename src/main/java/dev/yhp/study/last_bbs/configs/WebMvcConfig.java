@@ -23,8 +23,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(autoSignInterceptor)
-                .addPathPatterns("/**")
-                .excludePathPatterns("/**.js", "/**.css", "/**.png", "/**.jpg");
+        registry.addInterceptor(autoSignInterceptor).addPathPatterns("/**").excludePathPatterns("/**.js", "/**.css");
     }
 }

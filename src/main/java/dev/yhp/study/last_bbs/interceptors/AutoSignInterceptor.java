@@ -25,24 +25,29 @@ public class AutoSignInterceptor implements HandlerInterceptor {
         HttpSession session = request.getSession();
         Object userObj = session.getAttribute(UserDto.MODEL_NAME);
         UserDto user = userObj instanceof UserDto ? (UserDto) userObj : null;
-        if(user == null && request.getCookies() != null){
+        if (user == null && request.getCookies() != null) {
             Cookie autoSignKeyCookie = null;
-            for(Cookie cookie : request.getCookies()){
-                if(cookie.getName().equals("ask")){
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals("ask")) {
                     autoSignKeyCookie = cookie;
+                    break;
                 }
             }
-            if(autoSignKeyCookie != null){
+
+            if (autoSignKeyCookie != null) {
                 user = this.userService.login(autoSignKeyCookie);
                 if(user != null){
                     session.setAttribute(UserDto.MODEL_NAME, user);
 
-                    this.userService.extendAutoSignKey(autoSignKeyCookie);
+                    this.userService.extendAutoSignKeyCookie(autoSignKeyCookie);
                     autoSignKeyCookie.setMaxAge(3600 * 24 * UserService.Config.AUTO_SIGN_VALID_DAYS);
+                    autoSignKeyCookie.setPath("/");
                     response.addCookie(autoSignKeyCookie);
                 }
             }
         }
+
+
         return true;
     }
 }

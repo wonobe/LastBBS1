@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="dev.yhp.study.last_bbs.mappers.IUserMapper">
-    <update id="updateAutoSignKeyExtended">
+    <update id="updateAutoSignKeyExtend">
         UPDATE `last_bbs`.`user_auto_sign_keys`
         SET `expires_at` = DATE_ADD(NOW(), INTERVAL #{days} DAY)
         WHERE `key` = #{key}
@@ -75,7 +75,8 @@
                `user`.`address_secondary` AS `addressSecondary`,
                `user`.`level`             AS `level`
         FROM `last_bbs`.`user_auto_sign_keys` AS `key`
-                 LEFT JOIN `last_bbs`.`users` AS `user` ON `key`.`user_email` = `user`.`email`
+                 LEFT JOIN `last_bbs`.`users` AS `user`
+                           ON `key`.`user_email` = `user`.`email`
         WHERE `key`.`key` = #{key}
           AND `key`.`expires_at` > NOW()
           AND `key`.`expired_flag` = FALSE
@@ -84,6 +85,27 @@
 
     <insert id="insertAutoSignKey">
         INSERT INTO `last_bbs`.`user_auto_sign_keys`(`user_email`, `key`, `expires_at`)
-        VALUES (#{email}, #{key}, DATE_ADD(NOW(), INTERVAL #{days} DAY))
+        VALUES (#{email}, #{key}, DATE_ADD(NOW(), INTERVAL #{days} DAY));
     </insert>
+
+    <update id="updateAutoSignKeyExpire">
+        UPDATE `last_bbs`.`user_auto_sign_keys`
+        SET `expired_flag` = TRUE
+        WHERE `key` = #{key}
+        LIMIT 1
+    </update>
+
+    <update id="updateUser" parameterType="dev.yhp.study.last_bbs.vos.user.ModifyVo">
+        UPDATE `last_bbs`.`users`
+        SET `password`          = #{hashedPasswordNew},
+            `nickname`          = #{nickname},
+            `contact_first`     = #{contactFirst},
+            `contact_second`    = #{contactSecond},
+            `contact_third`     = #{contactThird},
+            `address_post`      = #{addressPost},
+            `address_primary`   = #{addressPrimary},
+            `address_secondary` = #{addressSecondary}
+        WHERE `email` = #{user.email}
+        LIMIT 1
+    </update>
 </mapper>
